@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163159469770",
+    "project_id": "find-mosque-be562",
+    "storage_bucket": "find-mosque-be562.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163159469770:android:02e79a39744a1024af4e33",
+        "android_client_info": {
+          "package_name": "com.example.find_masjid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByoDg9YKHec3uW3GWtvGjryJODdUvW9ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
