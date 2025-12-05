@@ -33,11 +33,11 @@
 //     return Scaffold(
 //       appBar: AppBar(
 //         backgroundColor: Colors.green,
-//         bottom: PreferredSize(preferredSize: Size.fromHeight(kToolbarHeight), 
+//         bottom: PreferredSize(preferredSize: Size.fromHeight(kToolbarHeight),
 //         child: Padding(padding: EdgeInsets.all(8.0),
 //         child: SearchBar(leading: Icon(Icons.search),
 //         onTap: (){},
-//         hintText: 'Search Masjid Here',) 
+//         hintText: 'Search Masjid Here',)
 //         ),
 //       ),
 //       ),
@@ -62,7 +62,6 @@
 //   }
 // }
 
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,12 +75,11 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  
   GoogleMapController? mapController;
   LatLng selectedPos = const LatLng(25.3960, 68.3578);
   Set<Marker> markers = {};
-  
-  List <dynamic> mosquesData = [];
+
+  List<dynamic> mosquesData = [];
 
   @override
   void initState() {
@@ -90,40 +88,40 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> _loadJsonData() async {
-  final String response = await rootBundle.loadString('assets/data/mosque.json');
-  final data = json.decode(response);
+    final String response = await rootBundle.loadString('assets/mosque.json');
+    final jsonData = json.decode(response);
 
-  setState(() {
-    mosquesData = data;
-  });
-  print('"JSON Loaded: ${mosquesData.length}"');
+    setState(() {
+      mosquesData = jsonData["mosquesData"];
+    });
 
-  _loadMosqueMarkers(); // markers load
-}
+    print("JSON Loaded: ${mosquesData.length}");
+    _loadMosqueMarkers();
+  }
 
   // Load markers from JSON data
   void _loadMosqueMarkers() {
     Set<Marker> loadedMarkers = {};
-    
+
     for (var mosque in mosquesData) {
       loadedMarkers.add(
         Marker(
-          markerId: MarkerId(mosque['id']),
-          position: LatLng(mosque['latitude'], mosque['longitude']),
+          markerId: MarkerId(mosque['id'].toString()),
+          position: LatLng(mosque['lat'], mosque['lng']),
           infoWindow: InfoWindow(
             title: mosque['name'],
             snippet: 'Tap for directions',
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen
-              ),
+            BitmapDescriptor.hueGreen,
+          ),
           onTap: () {
             _onMarkerTapped(mosque);
           },
         ),
       );
     }
-    
+
     setState(() {
       markers = loadedMarkers;
     });
@@ -144,7 +142,7 @@ class _HomepageState extends State<Homepage> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('Lat: ${mosque['latitude']}, Lng: ${mosque['longitude']}'),
+            Text('Lat: ${mosque['lat']}, Lng: ${mosque['lng']}'),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
@@ -177,7 +175,10 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: const Text('Mosque Finder', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Mosque Finder',
+          style: TextStyle(color: Colors.white),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Padding(
@@ -192,12 +193,9 @@ class _HomepageState extends State<Homepage> {
       ),
       body: SafeArea(
         child: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: selectedPos,
-            zoom: 14,
-          ),
+          initialCameraPosition: CameraPosition(target: selectedPos, zoom: 14),
           onMapCreated: (controller) => mapController = controller,
-          markers: markers,  // Use the markers set here
+          markers: markers, // Use the markers set here
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
         ),

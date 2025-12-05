@@ -25,7 +25,7 @@
 //       timer?.cancel();
 //       Navigator.pushReplacementNamed(context, '/home');
 //     }
-    
+
 //   }
 //   @override
 //   void dispose(){
@@ -94,7 +94,8 @@ class VerifyEmailScreen extends StatefulWidget {
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
-class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTickerProviderStateMixin {
+class _VerifyEmailScreenState extends State<VerifyEmailScreen>
+    with SingleTickerProviderStateMixin {
   bool isSending = false;
   bool canResend = true;
   int resendTimer = 60;
@@ -106,23 +107,23 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animation
     _animationController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _fadeAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeIn,
     );
-    
+
     _animationController.forward();
-    
+
     // Check verification periodically
     timer = Timer.periodic(Duration(seconds: 3), (_) => checkVerification());
-    
+
     // Send initial verification email
     sendVerificationEmail();
   }
@@ -131,11 +132,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
     try {
       await FirebaseAuth.instance.currentUser!.reload();
       final user = FirebaseAuth.instance.currentUser;
-      
+
       if (user != null && user.emailVerified) {
         timer?.cancel();
         resendCountdown?.cancel();
-        
+
         // Show success message before navigating
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -150,9 +151,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
             duration: Duration(seconds: 2),
           ),
         );
-        
+
         await Future.delayed(Duration(seconds: 1));
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/userhome');
       }
     } catch (e) {
       print('Error checking verification: $e');
@@ -161,7 +162,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
 
   Future<void> sendVerificationEmail() async {
     if (!canResend) return;
-    
+
     setState(() {
       isSending = true;
       canResend = false;
@@ -170,7 +171,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
 
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -274,7 +275,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                       color: Colors.white,
                     ),
                   ),
-                  
+
                   SizedBox(height: 40),
 
                   // Title
@@ -288,7 +289,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   SizedBox(height: 16),
 
                   // Email display
@@ -334,7 +335,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.amber.shade700, size: 20),
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.amber.shade700,
+                          size: 20,
+                        ),
                         SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -365,7 +370,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : Icon(Icons.refresh_rounded, size: 22),
@@ -373,8 +380,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                         isSending
                             ? "Sending..."
                             : canResend
-                                ? "Resend Verification Email"
-                                : "Resend in ${resendTimer}s",
+                            ? "Resend Verification Email"
+                            : "Resend in ${resendTimer}s",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -412,7 +419,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> with SingleTicker
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.green.shade700,
-                        side: BorderSide(color: Colors.green.shade300, width: 2),
+                        side: BorderSide(
+                          color: Colors.green.shade300,
+                          width: 2,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),

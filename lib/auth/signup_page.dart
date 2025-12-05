@@ -35,7 +35,7 @@
 //           if(user != null && !user.emailVerified){
 //             await user.sendEmailVerification();
 //           }
-        
+
 //         ScaffoldMessenger.of(context).showSnackBar(
 //           SnackBar(content: Text("Account Created Successfully! Verification email sent."))
 //         );
@@ -43,7 +43,7 @@
 //         MaterialPageRoute(builder: (_)=> VerifyEmailScreen())
 //         );
 
-//     } 
+//     }
 //     catch (e){
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         SnackBar(content: Text(e.toString())),
@@ -73,7 +73,6 @@
 //     }
 //     return null;
 //   }
- 
 
 //   @override
 //   void dispose() {
@@ -113,7 +112,7 @@
 //                         color: Colors.green,),
 //                         keyboardType: TextInputType.number,
 //                     ),
-                   
+
 //                     const SizedBox(height: 10.0),
 //                     CustomTextField(controller: _passwordController,
 //                     labelText: 'Password',
@@ -123,7 +122,7 @@
 //                     obscureText: true,
 //                     validator: _passwordValidator,
 //                     ),
-                    
+
 //                     const SizedBox(height: 10.0),
 //                     CustomTextField(controller: _confirmPasswordController,
 //                      labelText: 'Confirm Password',
@@ -133,11 +132,11 @@
 //                           obscureText: true,
 //                       validator: _confirmPasswordValidator,
 //                      ),
-                    
+
 //                     const SizedBox(height: 10.0),
 //                      GestureDetector(
 //                       onTap: isloading ? null :signup,
-                      
+
 //                       child: Container(
 //                         height: 50,
 //                         width: double.infinity,
@@ -146,7 +145,7 @@
 //                           color: Colors.green,
 //                         ),
 //                         child: Center(
-//                           child: isloading 
+//                           child: isloading
 //                           ? CircularProgressIndicator(
 //                             color: Colors.white,
 //                             strokeWidth: 2,
@@ -188,19 +187,21 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateMixin {
+class _SignupPageState extends State<SignupPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final TextEditingController _usernameController =TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _cnicController = TextEditingController();
-  
+
   bool isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
-  
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -208,34 +209,34 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animations
     _animationController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _fadeAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeIn,
     );
-    
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
-    
+
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
+
     _animationController.forward();
   }
 
-  Future<void> signup ()
-  // (dynamic _nameController) 
+  Future<void> signup()
+  // (dynamic _nameController)
   async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -248,40 +249,43 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
           ),
           backgroundColor: Colors.orange.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
     }
-    
+
     // Dismiss keyboard
     FocusScope.of(context).unfocus();
-    
+
     setState(() {
       isLoading = true;
     });
-    
+
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       await FirebaseFirestore.instance
-      .collection('users').doc(userCredential.user!.uid).set({
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+            'email': userCredential.user!.email,
+            'name': _usernameController.text,
+            'uid': userCredential.user!.uid,
+            'isBlocked': false,
+          });
 
-      'email': userCredential.user!.email,
-      'name': _usernameController.text, // agar name input field hai
-      'uid': userCredential.user!.uid,
-      'isBlocked': false,
-      });
-      
-      
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null && !user.emailVerified) {
         await user.sendEmailVerification();
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -299,11 +303,13 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             ),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             duration: Duration(seconds: 3),
           ),
         );
-        
+
         await Future.delayed(Duration(milliseconds: 500));
         Navigator.pushReplacement(
           context,
@@ -313,7 +319,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     } on FirebaseAuthException catch (e) {
       String message = "";
       IconData icon = Icons.error_outline;
-      
+
       switch (e.code) {
         case 'email-already-in-use':
           message = 'This email is already registered. Please login instead.';
@@ -334,7 +340,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
         default:
           message = 'Signup failed: ${e.message}';
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -347,7 +353,9 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             ),
             backgroundColor: Colors.red.shade600,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             duration: Duration(seconds: 4),
           ),
         );
@@ -360,12 +368,16 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
               children: [
                 Icon(Icons.warning_outlined, color: Colors.white),
                 SizedBox(width: 10),
-                Expanded(child: Text('An unexpected error occurred: ${e.toString()}')),
+                Expanded(
+                  child: Text('An unexpected error occurred: ${e.toString()}'),
+                ),
               ],
             ),
             backgroundColor: Colors.orange.shade700,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -419,15 +431,17 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     }
     return null;
   }
-   String? _nameValidator(String? value) {
-    if (value == null || value.isEmpty){
+
+  String? _nameValidator(String? value) {
+    if (value == null || value.isEmpty) {
       return 'Name is required.';
     }
     if (value.length < 3) {
       return 'Name must be at least 3 characters long.';
     }
     return null;
-     }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -443,7 +457,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
@@ -460,17 +474,20 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: height * 0.04),
-                      
+
                       // Back Button
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.grey[800]),
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.grey[800],
+                        ),
                         onPressed: () => Navigator.pop(context),
                         padding: EdgeInsets.zero,
                         constraints: BoxConstraints(),
                       ),
-                      
+
                       SizedBox(height: height * 0.02),
-                      
+
                       // Header Section
                       Center(
                         child: Column(
@@ -517,9 +534,9 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           ],
                         ),
                       ),
-                      
+
                       SizedBox(height: height * 0.04),
-                      
+
                       // Email Field
                       Text(
                         'Email Address',
@@ -534,12 +551,15 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         controller: _emailController,
                         labelText: '',
                         hintText: 'Enter your email',
-                        prefixIcon: Icon(Icons.email_outlined, color: AppColor.primary),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: AppColor.primary,
+                        ),
                         validator: _emailValidator,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: height * 0.02),
-                      
+
                       // Name field
                       Text(
                         'Full name',
@@ -554,12 +574,14 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         controller: _usernameController,
                         labelText: '',
                         hintText: 'Enter your name',
-                        prefixIcon: Icon(Icons.person_2_outlined, color: AppColor.primary),
+                        prefixIcon: Icon(
+                          Icons.person_2_outlined,
+                          color: AppColor.primary,
+                        ),
                         validator: _nameValidator,
-                        
                       ),
                       SizedBox(height: height * 0.02),
-                      
+
                       // CNIC Field (Optional)
                       Text(
                         'CNIC (Optional)',
@@ -574,7 +596,10 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         controller: _cnicController,
                         labelText: '',
                         hintText: 'Enter your 13-digit CNIC',
-                        prefixIcon: Icon(Icons.credit_card_outlined, color: AppColor.primary),
+                        prefixIcon: Icon(
+                          Icons.credit_card_outlined,
+                          color: AppColor.primary,
+                        ),
                         keyboardType: TextInputType.number,
                         validator: _cnicValidator,
                         inputFormatters: [
@@ -582,9 +607,9 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           LengthLimitingTextInputFormatter(13),
                         ],
                       ),
-                      
+
                       SizedBox(height: height * 0.02),
-                      
+
                       // Password Field
                       Text(
                         'Password',
@@ -599,11 +624,16 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         controller: _passwordController,
                         labelText: '',
                         hintText: 'Enter your password',
-                        prefixIcon: Icon(Icons.lock_outline, color: AppColor.primary),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: AppColor.primary,
+                        ),
                         obscureText: _obscurePassword,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: Colors.grey[600],
                           ),
                           onPressed: () {
@@ -614,13 +644,12 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         ),
                         validator: _passwordValidator,
                       ),
-                      
+
                       // Password strength indicator
                       // SizedBox(height: height * 0.01),
                       // _buildPasswordStrengthIndicator(),
-                      
                       SizedBox(height: height * 0.02),
-                      
+
                       // Confirm Password Field
                       Text(
                         'Confirm Password',
@@ -635,24 +664,30 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         controller: _confirmPasswordController,
                         labelText: '',
                         hintText: 'Re-enter your password',
-                        prefixIcon: Icon(Icons.lock_outline, color: AppColor.primary),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: AppColor.primary,
+                        ),
                         obscureText: _obscureConfirmPassword,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: Colors.grey[600],
                           ),
                           onPressed: () {
                             setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
                             });
                           },
                         ),
                         validator: _confirmPasswordValidator,
                       ),
-                      
+
                       SizedBox(height: height * 0.02),
-                      
+
                       // Terms and Conditions Checkbox
                       Container(
                         decoration: BoxDecoration(
@@ -660,7 +695,10 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.blue.shade100),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.01),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.02,
+                          vertical: height * 0.01,
+                        ),
                         child: Row(
                           children: [
                             Checkbox(
@@ -715,15 +753,19 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           ],
                         ),
                       ),
-                      
+
                       SizedBox(height: height * 0.03),
-                      
+
                       // Sign Up Button
                       SizedBox(
                         width: double.infinity,
                         height: height * 0.07,
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : signup,
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  await signup();
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade600,
                             foregroundColor: Colors.white,
@@ -753,15 +795,22 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                 ),
                         ),
                       ),
-                      
+
                       SizedBox(height: height * 0.025),
-                      
+
                       // Divider with "OR"
                       Row(
                         children: [
-                          Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey[300],
+                              thickness: 1,
+                            ),
+                          ),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.04,
+                            ),
                             child: Text(
                               'OR',
                               style: TextStyle(
@@ -771,14 +820,17 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                             ),
                           ),
-                          Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey[300],
+                              thickness: 1,
+                            ),
+                          ),
                         ],
                       ),
-                      
+
                       SizedBox(height: height * 0.025),
-                      
-                     
-                      
+
                       // Login Link
                       Center(
                         child: Row(
@@ -812,7 +864,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           ],
                         ),
                       ),
-                      
+
                       SizedBox(height: height * 0.03),
                     ],
                   ),
@@ -825,67 +877,67 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     );
   }
 
-//   Widget _buildPasswordStrengthIndicator() {
-//     final password = _passwordController.text;
-//     int strength = 0;
-//     String strengthText = '';
-//     Color strengthColor = Colors.grey;
-    
-//     if (password.isEmpty) {
-//       return SizedBox.shrink();
-//     }
-    
-//     if (password.length >= 6) strength++;
-//     if (password.length >= 8) strength++;
-//     if (RegExp(r'[A-Z]').hasMatch(password)) strength++;
-//     if (RegExp(r'[0-9]').hasMatch(password)) strength++;
-//     if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) strength++;
-    
-//     if (strength <= 2) {
-//       strengthText = 'Weak';
-//       strengthColor = Colors.red;
-//     } else if (strength <= 3) {
-//       strengthText = 'Medium';
-//       strengthColor = Colors.orange;
-//     } else {
-//       strengthText = 'Strong';
-//       strengthColor = AppColor.primary;
-//     }
-    
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Row(
-//           children: [
-//             Expanded(
-//               child: LinearProgressIndicator(
-//                 value: strength / 5,
-//                 backgroundColor: Colors.grey[200],
-//                 color: strengthColor,
-//                 minHeight: 4,
-//                 borderRadius: BorderRadius.circular(2),
-//               ),
-//             ),
-//             SizedBox(width: 10),
-//             Text(
-//               strengthText,
-//               style: TextStyle(
-//                 color: strengthColor,
-//                 fontSize: 12,
-//                 fontWeight: FontWeight.w600,
-//               ),
-//             ),
-//           ],
-//         ),
-//         SizedBox(height: 6),
-//         Text(
-//           'Use uppercase, numbers, and symbols for a stronger password',
-//           style: TextStyle(
-//             fontSize: 11,
-//             color: Colors.grey[600],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
+  //   Widget _buildPasswordStrengthIndicator() {
+  //     final password = _passwordController.text;
+  //     int strength = 0;
+  //     String strengthText = '';
+  //     Color strengthColor = Colors.grey;
+
+  //     if (password.isEmpty) {
+  //       return SizedBox.shrink();
+  //     }
+
+  //     if (password.length >= 6) strength++;
+  //     if (password.length >= 8) strength++;
+  //     if (RegExp(r'[A-Z]').hasMatch(password)) strength++;
+  //     if (RegExp(r'[0-9]').hasMatch(password)) strength++;
+  //     if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) strength++;
+
+  //     if (strength <= 2) {
+  //       strengthText = 'Weak';
+  //       strengthColor = Colors.red;
+  //     } else if (strength <= 3) {
+  //       strengthText = 'Medium';
+  //       strengthColor = Colors.orange;
+  //     } else {
+  //       strengthText = 'Strong';
+  //       strengthColor = AppColor.primary;
+  //     }
+
+  //     return Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             Expanded(
+  //               child: LinearProgressIndicator(
+  //                 value: strength / 5,
+  //                 backgroundColor: Colors.grey[200],
+  //                 color: strengthColor,
+  //                 minHeight: 4,
+  //                 borderRadius: BorderRadius.circular(2),
+  //               ),
+  //             ),
+  //             SizedBox(width: 10),
+  //             Text(
+  //               strengthText,
+  //               style: TextStyle(
+  //                 color: strengthColor,
+  //                 fontSize: 12,
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 6),
+  //         Text(
+  //           'Use uppercase, numbers, and symbols for a stronger password',
+  //           style: TextStyle(
+  //             fontSize: 11,
+  //             color: Colors.grey[600],
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   }
 }
