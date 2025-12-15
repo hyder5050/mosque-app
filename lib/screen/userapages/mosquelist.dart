@@ -105,10 +105,10 @@
 
 import 'package:find_masjid/widget/custom/appcolor.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Mosquelist extends StatefulWidget {
   const Mosquelist({super.key});
@@ -164,12 +164,19 @@ class _MosquelistState extends State<Mosquelist>
     });
 
     try {
-      final String response = await rootBundle.loadString('assets/mosque.json');
-      final data = json.decode(response);
 
-      final mosques = (data['mosquesData'] as List)
-          .map((e) => Mosque.fromJson(e))
+       final snapshot = await FirebaseFirestore.instance.collection('mosques').get();
+
+      final mosques = snapshot.docs
+          .map((doc) => Mosque.fromFirestore(doc.data()))
           .toList();
+
+      // final String response = await rootBundle.loadString('assets/mosque.json');
+      // final data = json.decode(response);
+
+      // final mosques = (data['mosquesData'] as List)
+      //     .map((e) => Mosque.fromJson(e))
+      //     .toList();
 
       setState(() {
         _allMosques = mosques;
@@ -926,64 +933,67 @@ class _MosquelistState extends State<Mosquelist>
 
   // Empty State
   Widget _buildEmptyState(double width, double height) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(width * 0.08),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: width * 0.25,
-              height: width * 0.25,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.search_off_rounded,
-                size: width * 0.12,
-                color: Colors.grey[400],
-              ),
-            ),
-            SizedBox(height: height * 0.025),
-            Text(
-              'No mosques found',
-              style: TextStyle(
-                fontSize: width * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-            SizedBox(height: height * 0.01),
-            Text(
-              'Try adjusting your search or filters',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: width * 0.035,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: height * 0.03),
-            OutlinedButton.icon(
-              onPressed: () {
-                _searchController.clear();
-                _filterMosques();
-              },
-              icon: const Icon(Icons.clear_all_rounded),
-              label: const Text('Clear Filters'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.green.shade600,
-                side: BorderSide(color: Colors.green.shade600),
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.06,
-                  vertical: height * 0.015,
+    return SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(width * 0.08),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: width * 0.25,
+                height: width * 0.25,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  shape: BoxShape.circle,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                child: Icon(
+                  Icons.search_off_rounded,
+                  size: width * 0.12,
+                  color: Colors.grey[400],
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: height * 0.025),
+              Text(
+                'No mosques found',
+                style: TextStyle(
+                  fontSize: width * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: height * 0.01),
+              Text(
+                'Try adjusting your search or filters',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: width * 0.035,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: height * 0.03),
+              OutlinedButton.icon(
+                onPressed: () {
+                  _searchController.clear();
+                  _filterMosques();
+                },
+                icon: const Icon(Icons.clear_all_rounded),
+                label: const Text('Clear Filters'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.green.shade600,
+                  side: BorderSide(color: Colors.green.shade600),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.06,
+                    vertical: height * 0.015,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1487,14 +1497,34 @@ class Mosque {
     required this.lat,
     required this.lng,
     required this.address,
+    required String id,
   });
 
-  factory Mosque.fromJson(Map<String, dynamic> json) {
+  factory Mosque.fromFirestore(Map<String, dynamic> data) {
     return Mosque(
-      name: json['name'],
-      lat: json['lat'],
-      lng: json['lng'],
-      address: json['address'],
+      id: data['id'] ?? 'Unknown',
+      name: data['name'] ?? 'Unknown',
+      lat: (data['lat'] as num).toDouble(),
+      lng: (data['lng'] as num).toDouble(),
+      address: data['address'] ?? 'No address provided',
     );
   }
+Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'lat': lat,
+      'lng': lng,
+      'address': address,
+    };
+  }  
+  
+  
+  //fromJson(Map<String, dynamic> json) {
+  //   return Mosque(
+  //     name: json['name'],
+  //     lat: json['lat'],
+  //     lng: json['lng'],
+  //     address: json['address'],
+  //   );
+  // }
 }

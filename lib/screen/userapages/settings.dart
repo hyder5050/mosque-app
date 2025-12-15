@@ -159,7 +159,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
   }
 
   void _showLanguageDialog() {
-    final languages = ['English', 'Urdu', 'Arabic', 'Turkish'];
+    final languages = ['English', 'Urdu'];
     
     showDialog(
       context: context,
@@ -259,15 +259,16 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             color: AppColor.secondary,
                           ),
                         ),
-                        // SizedBox(height: height * 0.015),
-                        // Text(
-                        //   user?.displayName ?? 'User',
-                        //   style: TextStyle(
-                        //     color: Colors.white,
-                        //     fontSize: width * 0.05,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
+                        SizedBox(height: height * 0.015),
+                        Text(
+                          user?.displayName ?? 'User',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      
                         SizedBox(height: height * 0.010),
                         Text(
                           user?.email ?? 'user@example.com',
@@ -283,17 +284,22 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                 ),
                 
                 
-              ),bottom: PreferredSize(
-                preferredSize:  Size.fromHeight(40),
-                child:
-         Text(
-                  'Settings',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),)
+              ),
+        //       bottom: PreferredSize(
+        //         preferredSize:  Size.fromHeight(40),
+        //         child:
+        //  Text(user?.displayName ?? 'user',
+        //                   style: TextStyle(
+        //                     color: Colors.white.withOpacity(0.9),
+        //                     fontSize: width * 0.035,
+        //                   ),
+        //           // 'Settings',
+        //           // style: TextStyle(
+        //           //   color: Colors.white,
+        //           //   fontWeight: FontWeight.bold,
+        //           //   fontSize: 30,
+        //           // ),
+        //         ),)
                 // centerTitle: true,
             ),
 
@@ -322,7 +328,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             iconColor: Colors.blue.shade600,
                             width: width,
                             onTap: () {
-                              Navigator.pushNamed(context, '/profile');
+                              Navigator.pushNamed(context, '/update-profile');
                             },
                           ),
                           _Divider(),
@@ -351,7 +357,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             iconColor: Colors.purple.shade600,
                             width: width,
                             onTap: () {
-                              Navigator.pushNamed(context, '/mapStyle');
+                              Navigator.pushNamed(context, '/change-password');
                             },
                           ),
                         ],

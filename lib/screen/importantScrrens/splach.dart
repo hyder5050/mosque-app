@@ -16,7 +16,7 @@ class LandingPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           User? user = FirebaseAuth.instance.currentUser;
 
-          if (user != null && user.email == 'admin@example.com') {
+          if (user != null && user.email == 'admin1@example.com') {
             return const Admin_bottom_bar(); // Already logged in as admin
           }
           else if (user != null) {

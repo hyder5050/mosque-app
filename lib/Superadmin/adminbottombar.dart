@@ -89,10 +89,7 @@ class _Admin_bottom_barState extends State<Admin_bottom_bar>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final height = size.height;
     final width = size.width;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: PageView(
@@ -100,13 +97,7 @@ class _Admin_bottom_barState extends State<Admin_bottom_bar>
         physics: const NeverScrollableScrollPhysics(),
         children: _pages,
       ),
-      extendBody: true,
       bottomNavigationBar: Container(
-        margin: EdgeInsets.only(
-          left: width * 0.04,
-          right: width * 0.04,
-          bottom: bottomPadding + height * 0.015,
-        ),
         // FIX 1: Use fixed height instead of percentage for consistency
         height: 70, // Fixed height that works on all devices
         decoration: BoxDecoration(

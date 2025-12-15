@@ -12,53 +12,64 @@ class Adminhomepage extends StatefulWidget {
 
 class _HomepageState extends State<Adminhomepage> {
   
-  GoogleMapController? mapController;
+ GoogleMapController? mapController;
   LatLng selectedPos = const LatLng(25.3960, 68.3578);
   Set<Marker> markers = {};
-  
-  List <dynamic> mosquesData = [];
+
+  List<dynamic> mosquesData = [];
+
+  BitmapDescriptor? mosqueIcon;
 
   @override
   void initState() {
     super.initState();
     _loadJsonData();
+    _loadMosqueIcon();
   }
 
-  Future<void> _loadJsonData() async {
-  final String response = await rootBundle.loadString('assets/data/mosque.json');
-  final data = json.decode(response);
-
-  setState(() {
-    mosquesData = data;
-  });
-  print('"JSON Loaded: ${mosquesData.length}"');
-
-  _loadMosqueMarkers(); // markers load
+void _loadMosqueIcon() async {
+  mosqueIcon = await BitmapDescriptor.fromAssetImage(
+    const ImageConfiguration(size: Size(48, 48)),
+    'assets/icon/location.png',
+  );
 }
+  Future<void> _loadJsonData() async {
+    final String response = await rootBundle.loadString('assets/mosque.json');
+    final jsonData = json.decode(response);
+
+    setState(() {
+      mosquesData = jsonData["mosquesData"];
+    });
+
+    print("JSON Loaded: ${mosquesData.length}");
+    _loadMosqueMarkers();
+  }
+  
 
   // Load markers from JSON data
   void _loadMosqueMarkers() {
     Set<Marker> loadedMarkers = {};
-    
+
     for (var mosque in mosquesData) {
       loadedMarkers.add(
         Marker(
-          markerId: MarkerId(mosque['id']),
-          position: LatLng(mosque['latitude'], mosque['longitude']),
+          markerId: MarkerId(mosque['id'].toString()),
+          position: LatLng(mosque['lat'], mosque['lng']),
           infoWindow: InfoWindow(
             title: mosque['name'],
             snippet: 'Tap for directions',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen
-              ),
+          icon: 
+          BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
           onTap: () {
             _onMarkerTapped(mosque);
           },
         ),
       );
     }
-    
+
     setState(() {
       markers = loadedMarkers;
     });
@@ -79,7 +90,7 @@ class _HomepageState extends State<Adminhomepage> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('Lat: ${mosque['latitude']}, Lng: ${mosque['longitude']}'),
+            Text('Lat: ${mosque['lat']}, Lng: ${mosque['lng']}'),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
@@ -112,7 +123,10 @@ class _HomepageState extends State<Adminhomepage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: const Text('Mosque Finder', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Mosque Finder',
+          style: TextStyle(color: Colors.white),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Padding(
@@ -127,12 +141,9 @@ class _HomepageState extends State<Adminhomepage> {
       ),
       body: SafeArea(
         child: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: selectedPos,
-            zoom: 14,
-          ),
+          initialCameraPosition: CameraPosition(target: selectedPos, zoom: 14),
           onMapCreated: (controller) => mapController = controller,
-          markers: markers,  // Use the markers set here
+          markers: markers, // Use the markers set here
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
         ),

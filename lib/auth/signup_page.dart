@@ -277,6 +277,7 @@ class _SignupPageState extends State<SignupPage>
           .set({
             'email': userCredential.user!.email,
             'name': _usernameController.text,
+            'cnic': _cnicController.text,
             'uid': userCredential.user!.uid,
             'isBlocked': false,
           });
@@ -539,6 +540,25 @@ class _SignupPageState extends State<SignupPage>
 
                       // Email Field
                       Text(
+                        'Full name',
+                        style: TextStyle(
+                          fontSize: width * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      SizedBox(height: height * 0.01),
+                      CustomTextField(
+                        controller: _usernameController,
+                        labelText: '',
+                        hintText: 'Enter your name',
+                        prefixIcon: Icon(
+                          Icons.person_2_outlined,
+                          color: AppColor.primary,
+                        ),
+                        validator: _nameValidator,
+                      ),
+                      Text(
                         'Email Address',
                         style: TextStyle(
                           fontSize: width * 0.035,
@@ -559,29 +579,6 @@ class _SignupPageState extends State<SignupPage>
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: height * 0.02),
-
-                      // Name field
-                      Text(
-                        'Full name',
-                        style: TextStyle(
-                          fontSize: width * 0.035,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      SizedBox(height: height * 0.01),
-                      CustomTextField(
-                        controller: _usernameController,
-                        labelText: '',
-                        hintText: 'Enter your name',
-                        prefixIcon: Icon(
-                          Icons.person_2_outlined,
-                          color: AppColor.primary,
-                        ),
-                        validator: _nameValidator,
-                      ),
-                      SizedBox(height: height * 0.02),
-
                       // CNIC Field (Optional)
                       Text(
                         'CNIC (Optional)',

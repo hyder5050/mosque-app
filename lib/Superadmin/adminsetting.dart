@@ -37,6 +37,8 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
     _animationController.forward();
   }
 
+  
+
   Future<void> _handleLogout() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -103,10 +105,25 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
       }
     }
   }
+//   Future<void> _getUserData() async {
+//   final user = FirebaseAuth.instance.currentUser;
+//   if (user == null) return;
+
+//   final snapshot = await FirebaseFirestore.instance
+//       .collection('users')
+//       .doc(user.uid)
+//       .get();
+
+//   if (snapshot.exists) {
+//     setState(() {
+//       firestoreName = snapshot['name'];  // 👈 yahan correct key use karo
+//     });
+//   }
+// }
 
   void _showLanguageDialog() {
-    final languages = ['English', 'Urdu', 'Arabic', 'Turkish'];
-    
+    final languages = ['English', 'Urdu'];
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -205,15 +222,16 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                             color: AppColor.secondary,
                           ),
                         ),
-                        // SizedBox(height: height * 0.015),
-                        // Text(
-                        //   user?.displayName ?? 'User',
-                        //   style: TextStyle(
-                        //     color: Colors.white,
-                        //     fontSize: width * 0.05,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
+                        SizedBox(height: height * 0.015),
+                        Text(
+                          // firestoreName ?? 'User',
+                          user?.displayName ?? 'User',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: height * 0.010),
                         Text(
                           user?.email ?? 'user@example.com',
@@ -229,17 +247,19 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                 ),
                 
                 
-              ),bottom: PreferredSize(
-                preferredSize:  Size.fromHeight(40),
-                child:
-         Text(
-                  'Settings',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),)
+              ),
+        //       bottom: PreferredSize(
+        //         preferredSize:  Size.fromHeight(40),
+        //         child:
+        //  Text(
+        //           'Settings',
+        //           style: TextStyle(
+        //             color: Colors.white,
+        //             fontWeight: FontWeight.bold,
+        //             fontSize: 30,
+        //           ),
+        //         ),
+        //         )
                 // centerTitle: true,
             ),
 
@@ -268,7 +288,7 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                             iconColor: Colors.blue.shade600,
                             width: width,
                             onTap: () {
-                              Navigator.pushNamed(context, '/profile');
+                              Navigator.pushNamed(context, '/update-profile');
                             },
                           ),
                           _Divider(),
@@ -280,7 +300,8 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                             width: width,
                             onTap: (){
                               Navigator.pushNamed(context, '/allusers');
-                            },),
+                            },
+                            ),
                           _Divider(),
                           _SettingsTile(
                             icon: Icons.lock_outline_rounded,
@@ -289,7 +310,7 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                             iconColor: Colors.purple.shade600,
                             width: width,
                             onTap: () {
-                              Navigator.pushNamed(context, '/mapStyle');
+                              Navigator.pushNamed(context, '/change-password');
                             },
                           ),
                         ],

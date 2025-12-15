@@ -57,20 +57,43 @@ class _AdminUserManagementState extends State<AdminUserManagement>
 
     try {
       // Fetch users from Firebase Firestore
+       print('🔍 Starting to fetch users...');
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
-          .orderBy('createdAt', descending: true)
+          // .orderBy('createdAt', descending: true)
           .get();
+          print('📦 Fetched ${snapshot.docs.length} documents');
 
-      final users = snapshot.docs
-          .map((doc) => AppUser.fromFirestore(doc))
-          .toList();
+    //        if (snapshot.docs.isEmpty) {
+    //   print('⚠️ No documents found in users collection');
+    // }
 
-      setState(() {
-        _allUsers = users;
-        _filteredUsers = users;
-        isLoading = false;
-      });
+      final users = snapshot.docs.map((doc)=> AppUser.fromFirestore(doc)
+      ).toList();
+    // final users = snapshot.docs.map((doc) {
+    //   print('👤 Processing user: ${doc.id}');
+    //   print('📄 User data: ${doc.data()}');
+    //   return AppUser.fromFirestore(doc);
+    // }).toList();
+
+    print('✅ Processed ${users.length} users');
+
+    setState(() {
+      _allUsers = users;
+      _filteredUsers = users;
+      isLoading = false;
+    });
+
+
+      // final users = snapshot.docs
+      //     .map((doc) => AppUser.fromFirestore(doc))
+      //     .toList();
+
+      // setState(() {
+      //   _allUsers = users;
+      //   _filteredUsers = users;
+      //   isLoading = false;
+      // });
 
       _sortUsers();
     } catch (e) {
@@ -118,6 +141,7 @@ class _AdminUserManagementState extends State<AdminUserManagement>
       } else if (_sortBy == 'date') {
         _filteredUsers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       }
+      
     });
   }
 
@@ -309,6 +333,7 @@ class _AdminUserManagementState extends State<AdminUserManagement>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         padding: EdgeInsets.all(width * 0.05),
         decoration: const BoxDecoration(
@@ -549,9 +574,9 @@ class _AdminUserManagementState extends State<AdminUserManagement>
             ),
             SizedBox(height: height * 0.015),
             _DetailRow(
-              icon: Icons.phone_outlined,
-              label: 'Phone',
-              value: user.phone ?? 'Not provided',
+              icon: Icons.credit_card_outlined,
+              label: 'CNIC Number',
+              value: user.cnic ?? 'Not provided',
               width: width,
             ),
             SizedBox(height: height * 0.015),
@@ -1688,7 +1713,7 @@ class AppUser {
   final String id;
   final String name;
   final String email;
-  final String? phone;
+  final String? cnic;
   final bool isBlocked;
   final DateTime createdAt;
 
@@ -1696,20 +1721,44 @@ class AppUser {
     required this.id,
     required this.name,
     required this.email,
-    this.phone,
+    this.cnic,
     required this.isBlocked,
     required this.createdAt,
   });
 
   factory AppUser.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return AppUser(
-      id: doc.id,
-      name: data['name'] ?? 'Unknown',
-      email: data['email'] ?? 'No email',
-      phone: data['phone'],
-      isBlocked: data['isBlocked'] ?? false,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
+    try{
+      final data = doc.data() as Map<String, dynamic>;
+
+
+      return AppUser(
+        id: doc.id,
+        name: data['name'] ?? 'Unknown',
+        email: data['email'] ?? 'No email',
+        cnic: data['cnic'],
+        isBlocked: data['isBlocked'] ?? false,
+        createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      );
+    } catch (e) {
+      print('Error parsing user data for doc ${doc.id}: $e');
+      return AppUser(
+        id: doc.id,
+        name: 'Unknown',
+        email: 'No email',
+        cnic: null,
+        isBlocked: false,
+        createdAt: DateTime.now(),
+      );
+    }
+
+    // final data = doc.data() as Map<String, dynamic>;
+    // return AppUser(
+    //   id: doc.id,
+    //   name: data['name'] ?? 'Unknown',
+    //   email: data['email'] ?? 'No email',
+    //   phone: data['phone'],
+    //   isBlocked: data['isBlocked'] ?? false,
+    //   createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    // );
   }
 }

@@ -1,9 +1,11 @@
+import 'package:find_masjid/Superadmin/adminbottombar.dart';
 import 'package:find_masjid/Superadmin/settings/userslist.dart';
 import 'package:find_masjid/auth/forgot_page.dart';
 import 'package:find_masjid/auth/login_page.dart';
 import 'package:find_masjid/auth/signup_page.dart';
 import 'package:find_masjid/screen/sattingsPages/updatepassword.dart';
 import 'package:find_masjid/screen/importantScrrens/splach.dart';
+import 'package:find_masjid/screen/sattingsPages/updateprofile.dart';
 import 'package:find_masjid/screen/userapages/userbottombar.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -54,15 +56,21 @@ class MyApp extends StatelessWidget {
 
       home: const LandingPage(),
       routes: {
+        // Important Screens
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/forgot-password': (context) => ForgotPasswordScreen(),
         '/change-password': (context) => ChangePasswordScreen(),
+        '/update-profile': (context) => const EditProfileScreen(),
 
+
+        // User Pages
         '/userhome': (context) => const Userbottombar(),
-        // '/userMosquelist': (context) => const Mosquelist(),
+        
         // '/userprofile': (context) => const Settings(),
-        // '/adminhome': (context) => const Adminhomepage(),
+      
+        // Superadmin Pages
+        '/adminhome': (context) => const Admin_bottom_bar(),
 
         // Settings Pages for Superadmin
         // '/adminProfile': (context) => const adminProfile(),

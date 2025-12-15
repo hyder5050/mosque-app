@@ -1,10 +1,12 @@
 
 import 'package:find_masjid/widget/custom/appcolor.dart';
+import 'package:find_masjid/widget/custom/custon_textfield.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class AdminMosquelist extends StatefulWidget {
   const AdminMosquelist({super.key});
@@ -60,11 +62,17 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     });
 
     try {
-      final String response = await rootBundle.loadString('assets/mosque.json');
-      final data = json.decode(response);
+      
+      final snapshot =
+          await FirebaseFirestore.instance.collection('mosques').get();
+      // final String response = await rootBundle.loadString('assets/mosque.json');
+      // final data = json.decode(response);
 
-      final mosques = (data['mosquesData'] as List)
-          .map((e) => Mosque.fromJson(e))
+      // final mosques = (data['mosquesData'] as List)
+      //     .map((e) => Mosque.fromJson(e))
+      //     .toList();
+      final mosques = snapshot.docs
+          .map((doc) => Mosque.fromFirestore(doc))
           .toList();
 
       setState(() {
@@ -82,6 +90,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       });
     }
   }
+  
 
   void _filterMosques() {
     final query = _searchController.text.toLowerCase();
@@ -99,6 +108,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
     _sortMosques();
   }
+  
 
   void _sortMosques() {
     setState(() {
@@ -188,6 +198,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       ),
     );
   }
+  
 
   // Show options when mosque is tapped
   void _showMosqueOptions(Mosque mosque) {
@@ -197,6 +208,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         padding: EdgeInsets.all(width * 0.05),
         decoration: const BoxDecoration(
@@ -440,6 +452,53 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       );
     }
   }
+  void _showAddMosqueDialog() {
+  final nameCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
+  final latCtrl = TextEditingController();
+  final lngCtrl = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text('Add New Mosque'),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            CustomTextField(controller: nameCtrl, labelText: 'Mosque Name'),
+            SizedBox(height: 10),
+            CustomTextField(controller: addressCtrl, labelText: 'Address'),
+            SizedBox(height: 10),
+            CustomTextField(controller: latCtrl, labelText: 'Latitude', keyboardType: TextInputType.number),
+            SizedBox(height: 10),
+            CustomTextField(controller: lngCtrl, labelText: 'Longitude', keyboardType: TextInputType.number),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel',
+        style: TextStyle(color: Colors.blue))),
+        ElevatedButton(
+          onPressed: () async {
+            await FirebaseFirestore.instance.collection('mosques').add({
+              'name': nameCtrl.text.trim(),
+              'address': addressCtrl.text.trim(),
+              'lat': double.parse(latCtrl.text),
+              'lng': double.parse(lngCtrl.text),
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+            Colors.green.shade600;
+
+            Navigator.pop(context);
+            _loadMosques(); // refresh list
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
+}
 
   void _showErrorSnackbar(String message) {
     if (mounted) {
@@ -474,11 +533,22 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     final width = size.width;
 
     return Scaffold(
+      // resizeToAvoidBottomInset: true,
       backgroundColor: Colors.grey[50],
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.green.shade600,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          'Add Mosque',
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: _showAddMosqueDialog,
+      ),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: CustomScrollView(
           slivers: [
+            
             // FIXED: Custom App Bar - Removed title from FlexibleSpaceBar
             SliverAppBar(
               expandedHeight: height * 0.20,
@@ -821,64 +891,68 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
   // Empty State
   Widget _buildEmptyState(double width, double height) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(width * 0.08),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: width * 0.25,
-              height: width * 0.25,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.search_off_rounded,
-                size: width * 0.12,
-                color: Colors.grey[400],
-              ),
-            ),
-            SizedBox(height: height * 0.025),
-            Text(
-              'No mosques found',
-              style: TextStyle(
-                fontSize: width * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-            SizedBox(height: height * 0.01),
-            Text(
-              'Try adjusting your search or filters',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: width * 0.035,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: height * 0.03),
-            OutlinedButton.icon(
-              onPressed: () {
-                _searchController.clear();
-                _filterMosques();
-              },
-              icon: const Icon(Icons.clear_all_rounded),
-              label: const Text('Clear Filters'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.green.shade600,
-                side: BorderSide(color: Colors.green.shade600),
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.06,
-                  vertical: height * 0.015,
+    return 
+    SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(width * 0.08),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: width * 0.25,
+                height: width * 0.25,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  shape: BoxShape.circle,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                child: Icon(
+                  Icons.search_off_rounded,
+                  size: width * 0.12,
+                  color: Colors.grey[400],
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: height * 0.025),
+              Text(
+                'No mosques found',
+                style: TextStyle(
+                  fontSize: width * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: height * 0.01),
+              Text(
+                'Try adjusting your search or filters',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: width * 0.035,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: height * 0.03),
+              OutlinedButton.icon(
+                onPressed: () {
+                  _searchController.clear();
+                  _filterMosques();
+                },
+                icon: const Icon(Icons.clear_all_rounded),
+                label: const Text('Clear Filters'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.green.shade600,
+                  side: BorderSide(color: Colors.green.shade600),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.06,
+                    vertical: height * 0.015,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1382,14 +1456,35 @@ class Mosque {
     required this.lat,
     required this.lng,
     required this.address,
+    required String id,
   });
 
-  factory Mosque.fromJson(Map<String, dynamic> json) {
+  factory Mosque.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Mosque(
-      name: json['name'],
-      lat: json['lat'],
-      lng: json['lng'],
-      address: json['address'],
+      id:doc.id,
+      name: data['name'] ?? 'Unnamed Mosque',
+      lat: (data['lat'] ?? 0).toDouble(),
+      lng: (data['lng'] ?? 0).toDouble(),
+      address: data['address'] ?? 'No address provided',
+      
     );
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'address': address,
+      'lat': lat,
+      'lng': lng,
+      'createdAt': FieldValue.serverTimestamp(),
+    };
+  }
+  // factory Mosque.fromJson(Map<String, dynamic> json) {
+  //   return Mosque(
+  //     name: json['name'],
+  //     lat: json['lat'],
+  //     lng: json['lng'],
+  //     address: json['address'],
+  //   );
+  // }
 }

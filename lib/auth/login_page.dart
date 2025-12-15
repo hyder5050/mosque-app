@@ -221,7 +221,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   
   Future<void> login() async {
     if (!_formKey.currentState!.validate()) return;
-   
+    print('Attempting login for user: ${_emailController.text.trim()}');
+    
     // Dismiss keyboard
     FocusScope.of(context).unfocus();
     
@@ -235,10 +236,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         password: _passwordController.text.trim(),
       );
       print("Login successful for user: ${userCredential.user?.email}");
-      if(_emailController.text.trim() =='admin@example.com' 
+      if(_emailController.text.trim() =='admin1@example.com' 
       && _passwordController.text.trim() =='admin123'){
         Navigator.of(context).pushReplacementNamed('/adminhome');
-        print("login as admin");
+        return;
+        // print("login as admin");
         } else {
           Navigator.of(context).pushReplacementNamed('/userhome');
           print("login as user");
@@ -452,6 +454,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         controller: _emailController,
                         labelText: '',
                         hintText: 'Enter your email',
+                        keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icon(Icons.email_outlined, color: AppColor.primary),
                         validator: _emailValidator,
                       ),
