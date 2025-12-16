@@ -1,12 +1,11 @@
-
 import 'package:find_masjid/widget/custom/appcolor.dart';
 import 'package:find_masjid/widget/custom/custon_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 class AdminMosquelist extends StatefulWidget {
   const AdminMosquelist({super.key});
@@ -16,7 +15,7 @@ class AdminMosquelist extends StatefulWidget {
 }
 
 class _AdminMosquelistState extends State<AdminMosquelist>
-    with SingleTickerProviderStateMixin { 
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -62,9 +61,9 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     });
 
     try {
-      
-      final snapshot =
-          await FirebaseFirestore.instance.collection('mosques').get();
+      final snapshot = await FirebaseFirestore.instance
+          .collection('mosques')
+          .get();
       // final String response = await rootBundle.loadString('assets/mosque.json');
       // final data = json.decode(response);
 
@@ -90,7 +89,6 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       });
     }
   }
-  
 
   void _filterMosques() {
     final query = _searchController.text.toLowerCase();
@@ -108,7 +106,6 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
     _sortMosques();
   }
-  
 
   void _sortMosques() {
     setState(() {
@@ -198,7 +195,6 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       ),
     );
   }
-  
 
   // Show options when mosque is tapped
   void _showMosqueOptions(Mosque mosque) {
@@ -239,7 +235,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
                   width: width * 0.15,
                   height: width * 0.15,
                   decoration: BoxDecoration(
-                    gradient:AppColor.primaryGradient,
+                    gradient: AppColor.primaryGradient,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
@@ -422,7 +418,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
   // Share mosque location
   Future<void> _shareLocation(Mosque mosque) async {
-    final shareText = 
+    final shareText =
         '${mosque.name}\n\n'
         '📍 ${mosque.address}\n\n'
         '🗺️ Open in Google Maps:\n'
@@ -431,7 +427,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     // You can use share_plus package for sharing
     // For now, we'll copy to clipboard
     await Clipboard.setData(ClipboardData(text: shareText));
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -439,66 +435,66 @@ class _AdminMosquelistState extends State<AdminMosquelist>
             children: [
               const Icon(Icons.check_circle, color: Colors.white),
               const SizedBox(width: 10),
-              const Expanded(
-                child: Text('Location copied to clipboard!'),
-              ),
+              const Expanded(child: Text('Location copied to clipboard!')),
             ],
           ),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
     }
   }
-  void _showAddMosqueDialog() {
-  final nameCtrl = TextEditingController();
-  final addressCtrl = TextEditingController();
-  final latCtrl = TextEditingController();
-  final lngCtrl = TextEditingController();
+  //   void _showAddMosqueDialog() {
+  //   final nameCtrl = TextEditingController();
+  //   final addressCtrl = TextEditingController();
+  //   final latCtrl = TextEditingController();
+  //   final lngCtrl = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text('Add New Mosque'),
-      content: SingleChildScrollView(
-        child: Column(
-          children: [
-            CustomTextField(controller: nameCtrl, labelText: 'Mosque Name'),
-            SizedBox(height: 10),
-            CustomTextField(controller: addressCtrl, labelText: 'Address'),
-            SizedBox(height: 10),
-            CustomTextField(controller: latCtrl, labelText: 'Latitude', keyboardType: TextInputType.number),
-            SizedBox(height: 10),
-            CustomTextField(controller: lngCtrl, labelText: 'Longitude', keyboardType: TextInputType.number),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel',
-        style: TextStyle(color: Colors.blue))),
-        ElevatedButton(
-          onPressed: () async {
-            await FirebaseFirestore.instance.collection('mosques').add({
-              'name': nameCtrl.text.trim(),
-              'address': addressCtrl.text.trim(),
-              'lat': double.parse(latCtrl.text),
-              'lng': double.parse(lngCtrl.text),
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-            Colors.green.shade600;
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  //       title: const Text('Add New Mosque'),
+  //       content: SingleChildScrollView(
+  //         child: Column(
+  //           children: [
+  //             CustomTextField(controller: nameCtrl, labelText: 'Mosque Name'),
+  //             SizedBox(height: 10),
+  //             CustomTextField(controller: addressCtrl, labelText: 'Address'),
+  //             SizedBox(height: 10),
+  //             CustomTextField(controller: latCtrl, labelText: 'Latitude', keyboardType: TextInputType.number),
+  //             SizedBox(height: 10),
+  //             CustomTextField(controller: lngCtrl, labelText: 'Longitude', keyboardType: TextInputType.number),
+  //           ],
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel',
+  //         style: TextStyle(color: Colors.blue))),
+  //         ElevatedButton(
+  //           onPressed: () async {
+  //             await FirebaseFirestore.instance.collection('mosques').add({
+  //               'name': nameCtrl.text.trim(),
+  //               'address': addressCtrl.text.trim(),
+  //               'lat': double.parse(latCtrl.text),
+  //               'lng': double.parse(lngCtrl.text),
+  //               'createdAt': FieldValue.serverTimestamp(),
+  //             });
+  //             Colors.green.shade600;
 
-            Navigator.pop(context);
-            _loadMosques(); // refresh list
-          },
-          child: const Text('Save'),
-        ),
-      ],
-    ),
-  );
-}
+  //             Navigator.pop(context);
+  //             _loadMosques(); // refresh list
+  //           },
+  //           child: const Text('Save'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showErrorSnackbar(String message) {
     if (mounted) {
@@ -513,7 +509,9 @@ class _AdminMosquelistState extends State<AdminMosquelist>
           ),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -524,6 +522,176 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     _searchController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _showAddMosqueSheet() {
+    final nameCtrl = TextEditingController();
+    final addressCtrl = TextEditingController();
+
+    LatLng? selectedLatLng;
+    bool isSaving = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Icon(Icons.mosque, size: 40, color: Colors.green),
+                  ),
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: Text(
+                      'Add Mosque',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  CustomTextField(
+                    controller: nameCtrl,
+                    labelText: 'Mosque Name',
+                  ),
+                  const SizedBox(height: 12),
+
+                  CustomTextField(
+                    controller: addressCtrl,
+                    labelText: 'Address (optional)',
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 📍 LOCATION BUTTONS
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.my_location),
+                          label: const Text('Use Current Location'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade600,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onPressed: () async {
+                            final pos = await _getCurrentLatLng();
+                            if (pos != null) {
+                              setModalState(() => selectedLatLng = pos);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.map),
+                    label: const Text('Pick Location on Map'),
+                    onPressed: () async {
+                      final picked = await _openMapPicker();
+                      if (picked != null) {
+                        setModalState(() => selectedLatLng = picked);
+                      }
+                    },
+                  ),
+
+                  if (selectedLatLng != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      'Location selected ✔',
+                      style: TextStyle(color: Colors.green.shade700),
+                    ),
+                  ],
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isSaving
+                          ? null
+                          : () async {
+                              if (nameCtrl.text.trim().isEmpty) {
+                                _showErrorSnackbar('Please enter mosque name');
+                                return;
+                              }
+
+                              if (selectedLatLng == null) {
+                                _showErrorSnackbar(
+                                  'Please select mosque location',
+                                );
+                                return;
+                              }
+
+                              setModalState(() => isSaving = true);
+
+                              await FirebaseFirestore.instance
+                                  .collection('mosques')
+                                  .add({
+                                    'name': nameCtrl.text.trim(),
+                                    'address': addressCtrl.text.trim(),
+                                    'lat': selectedLatLng!.latitude,
+                                    'lng': selectedLatLng!.longitude,
+                                    'createdAt': FieldValue.serverTimestamp(),
+                                  });
+
+                              Navigator.pop(context);
+                              _loadMosques();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text('Save Mosque'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<LatLng?> _getCurrentLatLng() async {
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      return LatLng(position.latitude, position.longitude);
+    } catch (e) {
+      _showErrorSnackbar('Location permission denied');
+      return null;
+    }
+  }
+
+  Future<LatLng?> _openMapPicker() async {
+    return await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const MapPickerScreen(),
+      ),
+    );
   }
 
   @override
@@ -538,17 +706,13 @@ class _AdminMosquelistState extends State<AdminMosquelist>
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green.shade600,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'Add Mosque',
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: _showAddMosqueDialog,
+        label: const Text('Add Mosque', style: TextStyle(color: Colors.white)),
+        onPressed: _showAddMosqueSheet,
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: CustomScrollView(
           slivers: [
-            
             // FIXED: Custom App Bar - Removed title from FlexibleSpaceBar
             SliverAppBar(
               expandedHeight: height * 0.20,
@@ -588,7 +752,9 @@ class _AdminMosquelistState extends State<AdminMosquelist>
                 // View Toggle
                 IconButton(
                   icon: Icon(
-                    _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+                    _isGridView
+                        ? Icons.view_list_rounded
+                        : Icons.grid_view_rounded,
                     color: Colors.white,
                   ),
                   onPressed: () {
@@ -606,9 +772,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
               // FIXED: FlexibleSpaceBar without title
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  decoration: BoxDecoration(
-                    gradient: AppColor.primaryGradient
-                  ),
+                  decoration: BoxDecoration(gradient: AppColor.primaryGradient),
                   child: SafeArea(
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -773,17 +937,11 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
             // Content
             if (isLoading)
-              SliverFillRemaining(
-                child: _buildLoadingState(width, height),
-              )
+              SliverFillRemaining(child: _buildLoadingState(width, height))
             else if (hasError)
-              SliverFillRemaining(
-                child: _buildErrorState(width, height),
-              )
+              SliverFillRemaining(child: _buildErrorState(width, height))
             else if (_filteredMosques.isEmpty)
-              SliverFillRemaining(
-                child: _buildEmptyState(width, height),
-              )
+              SliverFillRemaining(child: _buildEmptyState(width, height))
             else if (_isGridView)
               _buildGridView(width, height)
             else
@@ -817,10 +975,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
           SizedBox(height: height * 0.02),
           Text(
             'Loading mosques...',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: width * 0.04,
-            ),
+            style: TextStyle(color: Colors.grey[600], fontSize: width * 0.04),
           ),
         ],
       ),
@@ -891,8 +1046,7 @@ class _AdminMosquelistState extends State<AdminMosquelist>
 
   // Empty State
   Widget _buildEmptyState(double width, double height) {
-    return 
-    SingleChildScrollView(
+    return SingleChildScrollView(
       child: Center(
         child: Padding(
           padding: EdgeInsets.all(width * 0.08),
@@ -963,19 +1117,16 @@ class _AdminMosquelistState extends State<AdminMosquelist>
     return SliverPadding(
       padding: EdgeInsets.all(width * 0.04),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final mosque = _filteredMosques[index];
-            return _MosqueListCard(
-              mosque: mosque,
-              index: index,
-              width: width,
-              height: height,
-              onTap: () => _showMosqueOptions(mosque),
-            );
-          },
-          childCount: _filteredMosques.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final mosque = _filteredMosques[index];
+          return _MosqueListCard(
+            mosque: mosque,
+            index: index,
+            width: width,
+            height: height,
+            onTap: () => _showMosqueOptions(mosque),
+          );
+        }, childCount: _filteredMosques.length),
       ),
     );
   }
@@ -991,19 +1142,16 @@ class _AdminMosquelistState extends State<AdminMosquelist>
           crossAxisSpacing: width * 0.03,
           mainAxisSpacing: width * 0.03,
         ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final mosque = _filteredMosques[index];
-            return _MosqueGridCard(
-              mosque: mosque,
-              index: index,
-              width: width,
-              height: height,
-              onTap: () => _showMosqueOptions(mosque),
-            );
-          },
-          childCount: _filteredMosques.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final mosque = _filteredMosques[index];
+          return _MosqueGridCard(
+            mosque: mosque,
+            index: index,
+            width: width,
+            height: height,
+            onTap: () => _showMosqueOptions(mosque),
+          );
+        }, childCount: _filteredMosques.length),
       ),
     );
   }
@@ -1066,7 +1214,7 @@ class _MosqueListCard extends StatelessWidget {
                     width: width * 0.15,
                     height: width * 0.15,
                     decoration: BoxDecoration(
-                      gradient:AppColor.primaryGradient,
+                      gradient: AppColor.primaryGradient,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
@@ -1202,10 +1350,7 @@ class _MosqueGridCard extends StatelessWidget {
       builder: (context, value, child) {
         return Opacity(
           opacity: value,
-          child: Transform.scale(
-            scale: 0.8 + (0.2 * value),
-            child: child,
-          ),
+          child: Transform.scale(scale: 0.8 + (0.2 * value), child: child),
         );
       },
       child: Container(
@@ -1362,11 +1507,7 @@ class _OptionTile extends StatelessWidget {
           color: iconColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: width * 0.06,
-        ),
+        child: Icon(icon, color: iconColor, size: width * 0.06),
       ),
       title: Text(
         title,
@@ -1378,10 +1519,7 @@ class _OptionTile extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(
-          fontSize: width * 0.032,
-          color: Colors.grey[600],
-        ),
+        style: TextStyle(fontSize: width * 0.032, color: Colors.grey[600]),
       ),
       trailing: Icon(
         Icons.chevron_right_rounded,
@@ -1462,12 +1600,11 @@ class Mosque {
   factory Mosque.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Mosque(
-      id:doc.id,
+      id: doc.id,
       name: data['name'] ?? 'Unnamed Mosque',
       lat: (data['lat'] ?? 0).toDouble(),
       lng: (data['lng'] ?? 0).toDouble(),
       address: data['address'] ?? 'No address provided',
-      
     );
   }
   Map<String, dynamic> toMap() {
@@ -1479,6 +1616,7 @@ class Mosque {
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
+
   // factory Mosque.fromJson(Map<String, dynamic> json) {
   //   return Mosque(
   //     name: json['name'],
@@ -1487,4 +1625,34 @@ class Mosque {
   //     address: json['address'],
   //   );
   // }
+}
+
+class MapPickerScreen extends StatefulWidget {
+  const MapPickerScreen({super.key});
+
+  @override
+  State<MapPickerScreen> createState() => _MapPickerScreenState();
+}
+
+class _MapPickerScreenState extends State<MapPickerScreen> {
+  LatLng selected = const LatLng(25.3960, 68.3578);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pick Mosque Location')),
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(target: selected, zoom: 16),
+        onTap: (pos) => setState(() => selected = pos),
+        markers: {
+          Marker(markerId: const MarkerId('picked'), position: selected),
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pop(context, selected),
+        icon: const Icon(Icons.check),
+        label: const Text('Confirm Location'),
+      ),
+    );
+  }
 }

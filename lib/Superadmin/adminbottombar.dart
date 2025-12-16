@@ -1,28 +1,25 @@
-import 'package:find_masjid/Superadmin/adminHomepage.dart';
-import 'package:find_masjid/Superadmin/adminMosquelist.dart';
-import 'package:find_masjid/Superadmin/adminsetting.dart';
+import 'package:find_masjid/superadmin/adminHomepage.dart';
+import 'package:find_masjid/superadmin/adminMosquelist.dart';
+import 'package:find_masjid/superadmin/adminsetting.dart';
 import 'package:find_masjid/widget/custom/appcolor.dart';
 import 'package:flutter/material.dart';
 
 class Admin_bottom_bar extends StatefulWidget {
-  
   const Admin_bottom_bar({super.key});
-  
+
   @override
   State<Admin_bottom_bar> createState() => _Admin_bottom_barState();
 }
 
-class _Admin_bottom_barState extends State<Admin_bottom_bar> 
+class _Admin_bottom_barState extends State<Admin_bottom_bar>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   late PageController _pageController;
   late AnimationController _animationController;
 
-  
   late List<Widget> _pages;
 
   @override
-
   void initState() {
     super.initState();
 
@@ -31,13 +28,13 @@ class _Admin_bottom_barState extends State<Admin_bottom_bar>
       const AdminMosquelist(),
       const Adminsetting(),
     ];
-    
-    _pageController=PageController(initialPage: _currentIndex);
-    _animationController = AnimationController(duration: const Duration(milliseconds: 300),
-      vsync: this,
-      );
-  }
 
+    _pageController = PageController(initialPage: _currentIndex);
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
 
   final List<NavItem> _navItems = [
     NavItem(
@@ -138,11 +135,7 @@ class NavItem {
   final IconData activeIcon;
   final String label;
 
-  NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
+  NavItem({required this.icon, required this.activeIcon, required this.label});
 }
 
 // FIXED Navigation Bar Item Widget
@@ -172,8 +165,8 @@ class _NavBarItem extends StatelessWidget {
           vertical: 8, // FIX 3: Use fixed padding instead of percentage
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? Colors.white.withOpacity(0.2) 
+          color: isSelected
+              ? Colors.white.withOpacity(0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
         ),

@@ -63,31 +63,32 @@ class Settings extends StatefulWidget {
   State<Settings> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin {
+class _SettingsState extends State<Settings>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  
+
   bool notificationsEnabled = true;
   bool darkModeEnabled = false;
   String selectedLanguage = 'English';
-  
+
   String adminEmail = "admin@gmail.com";
 
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animations
     _animationController = AnimationController(
       duration: Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _fadeAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeIn,
     );
-    
+
     _animationController.forward();
   }
 
@@ -95,9 +96,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Icon(Icons.logout_rounded, color: Colors.red.shade600),
@@ -112,10 +111,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -150,7 +146,9 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
               ),
               backgroundColor: Colors.red.shade600,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
@@ -160,13 +158,11 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
 
   void _showLanguageDialog() {
     final languages = ['English', 'Urdu'];
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Icon(Icons.language_rounded, color: Colors.green.shade600),
@@ -176,27 +172,31 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: languages.map((lang) => RadioListTile<String>(
-            title: Text(lang),
-            value: lang,
-            groupValue: selectedLanguage,
-            activeColor: Colors.green.shade600,
-            onChanged: (value) {
-              setState(() {
-                selectedLanguage = value!;
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Language changed to $value'),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+          children: languages
+              .map(
+                (lang) => RadioListTile<String>(
+                  title: Text(lang),
+                  value: lang,
+                  groupValue: selectedLanguage,
+                  activeColor: Colors.green.shade600,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLanguage = value!;
+                    });
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Language changed to $value'),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          )).toList(),
+              )
+              .toList(),
         ),
       ),
     );
@@ -207,8 +207,6 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
     _animationController.dispose();
     super.dispose();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -225,23 +223,22 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
           slivers: [
             // Modern App Bar with gradient
             SliverAppBar(
-              expandedHeight: height * 0.30,
+              expandedHeight: height * 0.2,
+              automaticallyImplyLeading: false,
               floating: false,
               pinned: true,
               backgroundColor: AppColor.secondary,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  decoration: BoxDecoration(
-                    gradient: AppColor.primaryGradient,
-                  ),
+                  decoration: BoxDecoration(gradient: AppColor.primaryGradient),
                   child: SafeArea(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         // Profile Avatar
                         Container(
-                          width: width * 0.22,
-                          height: width * 0.22,
+                          width: width * 0.2,
+                          height: width * 0.2,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white,
@@ -268,7 +265,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      
+
                         SizedBox(height: height * 0.010),
                         Text(
                           user?.email ?? 'user@example.com',
@@ -277,30 +274,28 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             fontSize: width * 0.035,
                           ),
                         ),
-                        SizedBox(height: height * 0.05),
+                        SizedBox(height: height * 0.02),
                       ],
                     ),
                   ),
                 ),
-                
-                
               ),
-        //       bottom: PreferredSize(
-        //         preferredSize:  Size.fromHeight(40),
-        //         child:
-        //  Text(user?.displayName ?? 'user',
-        //                   style: TextStyle(
-        //                     color: Colors.white.withOpacity(0.9),
-        //                     fontSize: width * 0.035,
-        //                   ),
-        //           // 'Settings',
-        //           // style: TextStyle(
-        //           //   color: Colors.white,
-        //           //   fontWeight: FontWeight.bold,
-        //           //   fontSize: 30,
-        //           // ),
-        //         ),)
-                // centerTitle: true,
+              //       bottom: PreferredSize(
+              //         preferredSize:  Size.fromHeight(40),
+              //         child:
+              //  Text(user?.displayName ?? 'user',
+              //                   style: TextStyle(
+              //                     color: Colors.white.withOpacity(0.9),
+              //                     fontSize: width * 0.035,
+              //                   ),
+              //           // 'Settings',
+              //           // style: TextStyle(
+              //           //   color: Colors.white,
+              //           //   fontWeight: FontWeight.bold,
+              //           //   fontSize: 30,
+              //           // ),
+              //         ),)
+              // centerTitle: true,
             ),
 
             // Settings Content
@@ -313,10 +308,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                     SizedBox(height: height * 0.02),
 
                     // Account Section
-                    _SectionHeader(
-                      title: 'Account',
-                      width: width,
-                    ),
+                    _SectionHeader(title: 'Account', width: width),
                     SizedBox(height: height * 0.015),
                     _SettingsCard(
                       child: Column(
@@ -339,15 +331,14 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             iconColor: Colors.orange.shade600,
                             width: width,
                             trailing: Icon(
-                              user?.emailVerified == true 
-                                  ? Icons.verified_rounded 
+                              user?.emailVerified == true
+                                  ? Icons.verified_rounded
                                   : Icons.warning_rounded,
-                              color: user?.emailVerified == true 
-                                  ? AppColor.primary 
+                              color: user?.emailVerified == true
+                                  ? AppColor.primary
                                   : Colors.orange,
                               size: width * 0.05,
                             ),
-                          
                           ),
                           _Divider(),
                           _SettingsTile(
@@ -367,10 +358,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                     SizedBox(height: height * 0.03),
 
                     // Preferences Section
-                    _SectionHeader(
-                      title: 'Preferences',
-                      width: width,
-                    ),
+                    _SectionHeader(title: 'Preferences', width: width),
                     SizedBox(height: height * 0.015),
                     _SettingsCard(
                       child: Column(
@@ -398,7 +386,7 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                             subtitle: selectedLanguage,
                             iconColor: Colors.green.shade600,
                             width: width,
-                            onTap: _showLanguageDialog,      
+                            onTap: _showLanguageDialog,
                           ),
                           _Divider(),
 
@@ -418,8 +406,6 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                           //     },
                           //   ),
                           // ),
-                          
-                          
                         ],
                       ),
                     ),
@@ -581,7 +567,6 @@ class _SettingsState extends State<Settings> with SingleTickerProviderStateMixin
                     //     ],
                     //   ),
                     // ),
-
                     SizedBox(height: height * 0.03),
 
                     // Logout Button
@@ -654,10 +639,7 @@ class _SectionHeader extends StatelessWidget {
   final String title;
   final double width;
 
-  const _SectionHeader({
-    required this.title,
-    required this.width,
-  });
+  const _SectionHeader({required this.title, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -680,9 +662,7 @@ class _SectionHeader extends StatelessWidget {
 class _SettingsCard extends StatelessWidget {
   final Widget child;
 
-  const _SettingsCard({
-    required this.child,
-  });
+  const _SettingsCard({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -738,11 +718,7 @@ class _SettingsTile extends StatelessWidget {
           color: iconColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: width * 0.06,
-        ),
+        child: Icon(icon, color: iconColor, size: width * 0.06),
       ),
       title: Text(
         title,
@@ -754,18 +730,17 @@ class _SettingsTile extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(
-          fontSize: width * 0.032,
-          color: Colors.grey[600],
-        ),
+        style: TextStyle(fontSize: width * 0.032, color: Colors.grey[600]),
       ),
-      trailing: trailing ?? (onTap != null
-          ? Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey[400],
-              size: width * 0.06,
-            )
-          : null),
+      trailing:
+          trailing ??
+          (onTap != null
+              ? Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey[400],
+                  size: width * 0.06,
+                )
+              : null),
     );
   }
 }

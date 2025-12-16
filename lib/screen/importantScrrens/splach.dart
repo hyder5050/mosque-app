@@ -1,4 +1,4 @@
-import 'package:find_masjid/Superadmin/adminbottombar.dart';
+import 'package:find_masjid/superadmin/adminbottombar.dart';
 import 'package:find_masjid/auth/login_page.dart';
 import 'package:find_masjid/screen/userapages/userbottombar.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,22 +18,17 @@ class LandingPage extends StatelessWidget {
 
           if (user != null && user.email == 'admin1@example.com') {
             return const Admin_bottom_bar(); // Already logged in as admin
-          }
-          else if (user != null) {
-            return const Userbottombar();} // Already logged in as regular user  
-           else {
+          } else if (user != null) {
+            return const Userbottombar();
+          } // Already logged in as regular user
+          else {
             return const LoginPage(); // Not logged in
           }
         }
 
         // Loading screen while initializing Firebase
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }
 }
-
