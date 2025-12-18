@@ -223,8 +223,8 @@ class _SettingsState extends State<Settings>
           slivers: [
             // Modern App Bar with gradient
             SliverAppBar(
-              expandedHeight: height * 0.2,
-              automaticallyImplyLeading: false,
+              expandedHeight: height * 0.3,
+              // automaticallyImplyLeading: false,
               floating: false,
               pinned: true,
               backgroundColor: AppColor.secondary,
@@ -363,23 +363,23 @@ class _SettingsState extends State<Settings>
                     _SettingsCard(
                       child: Column(
                         children: [
-                          _SettingsTile(
-                            icon: Icons.notifications_outlined,
-                            title: 'Notifications',
-                            subtitle: 'Manage notification preferences',
-                            iconColor: Colors.red.shade600,
-                            width: width,
-                            trailing: Switch(
-                              value: notificationsEnabled,
-                              activeColor: Colors.green.shade600,
-                              onChanged: (value) {
-                                setState(() {
-                                  notificationsEnabled = value;
-                                });
-                              },
-                            ),
-                          ),
-                          _Divider(),
+                          // _SettingsTile(
+                          //   icon: Icons.notifications_outlined,
+                          //   title: 'Notifications',
+                          //   subtitle: 'Manage notification preferences',
+                          //   iconColor: Colors.red.shade600,
+                          //   width: width,
+                          //   trailing: Switch(
+                          //     value: notificationsEnabled,
+                          //     activeColor: Colors.green.shade600,
+                          //     onChanged: (value) {
+                          //       setState(() {
+                          //         notificationsEnabled = value;
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
+                          // _Divider(),
                           _SettingsTile(
                             icon: Icons.language_rounded,
                             title: 'Language',

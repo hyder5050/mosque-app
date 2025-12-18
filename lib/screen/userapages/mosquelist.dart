@@ -1401,7 +1401,7 @@ import 'package:find_masjid/provider/mosqueProvider.dart';
 import 'package:find_masjid/widget/custom/appcolor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -1842,8 +1842,7 @@ class _MosquelistState extends State<Mosquelist>
               child: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    expandedHeight: height * 0.16,
-                    automaticallyImplyLeading: false,
+                    expandedHeight: height * 0.20, 
                     floating: false,
                     pinned: true,
                     backgroundColor: Colors.green.shade600,
@@ -1893,73 +1892,69 @@ class _MosquelistState extends State<Mosquelist>
                       ),
                     ],
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Container(
-                        decoration: BoxDecoration(
-                          gradient: AppColor.primaryGradient,
-                        ),
-                        child: SafeArea(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              top: kToolbarHeight + height * 0.01,
-                              left: width * 0.05,
-                              right: width * 0.05,
-                              bottom: height * 0.02,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Row(
+                background: Container(
+                  decoration: BoxDecoration(gradient: AppColor.primaryGradient),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: kToolbarHeight + height * 0.01,
+                        left: width * 0.05,
+                        right: width * 0.05,
+                        bottom: height * 0.02,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // Header Content
+                          Row(
+                            children: [
+                              Container(
+                                width: width * 0.14,
+                                height: width * 0.14,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Icon(
+                                  Icons.mosque_rounded,
+                                  color: Colors.white,
+                                  size: width * 0.08,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.04),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                      width: width * 0.14,
-                                      height: width * 0.14,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Icon(
-                                        Icons.mosque_rounded,
+                                    Text(
+                                      'Nearby Mosques',
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        size: width * 0.08,
+                                        fontSize: width * 0.05,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(width: width * 0.04),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            'Nearby Mosques',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: width * 0.05,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          SizedBox(height: height * 0.005),
-                                          Text(
-                                            '${_filteredMosques.length} mosques available',
-                                            style: TextStyle(
-                                              color: Colors.white.withOpacity(
-                                                0.9,
-                                              ),
-                                              fontSize: width * 0.033,
-                                            ),
-                                          ),
-                                        ],
+                                    SizedBox(height: height * 0.005),
+                                    Text(
+                                      '${_filteredMosques.length} mosques available',
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: width * 0.033,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
 
                   if (_isSearching)
                     SliverToBoxAdapter(
@@ -2245,7 +2240,7 @@ class _MosquelistState extends State<Mosquelist>
 
   Widget _buildListView(double width, double height) {
     return SliverPadding(
-      padding: EdgeInsets.all(width * 0.04),
+      padding: const EdgeInsets.only(bottom: 130), // To avoid FAB overlap
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           final mosque = _filteredMosques[index];
@@ -2263,7 +2258,7 @@ class _MosquelistState extends State<Mosquelist>
 
   Widget _buildGridView(double width, double height) {
     return SliverPadding(
-      padding: EdgeInsets.all(width * 0.04),
+      padding: const EdgeInsets.only(bottom: 130), // To avoid FAB overlap
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,

@@ -350,6 +350,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             duration: const Duration(seconds: 4),
           ),
+          
         );
       }
     } finally {

@@ -67,6 +67,7 @@ import 'dart:ui' as ui;
 import 'package:find_masjid/provider/mosqueProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -79,7 +80,8 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   GoogleMapController? mapController;
-  LatLng selectedPos = const LatLng(25.3960, 68.3578);
+  LatLng? selectedPos ;
+  bool isMapReady = false;
   Set<Marker> markers = {};
   BitmapDescriptor? customMarkerIcon;
   bool isLoadingMarkers = true;
@@ -101,6 +103,45 @@ class _HomepageState extends State<Homepage> {
       _loadMosqueMarkers();
     }
   }
+
+Future<LatLng?> _getCurrentLatLng() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) return null;
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) return null;
+  }
+
+  if (permission == LocationPermission.deniedForever) return null;
+
+  final position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  return LatLng(position.latitude, position.longitude);
+}
+
+Future<void> _moveToCurrentLocation() async {
+  final currentLatLng = await _getCurrentLatLng();
+
+  if (currentLatLng != null && mapController != null) {
+    setState(() {
+      selectedPos = currentLatLng;
+    });
+
+    mapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: currentLatLng,
+          zoom: 15,
+        ),
+      ),
+    );
+  }
+}
+
 
   // Load custom marker icon from assets
   Future<void> _loadCustomMarker() async {
@@ -130,7 +171,7 @@ class _HomepageState extends State<Homepage> {
       );
     }
   }
-
+ 
   // Alternative method: Create custom marker from widget
   // Future<BitmapDescriptor> _createCustomMarkerFromWidget() async {
   //   final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
@@ -187,7 +228,7 @@ class _HomepageState extends State<Homepage> {
     for (var mosque in provider.mosques) {
       loadedMarkers.add(
         Marker(
-          markerId: MarkerId(mosque.id),
+          markerId: MarkerId('${mosque.id}_${mosque.lat}_${mosque.lng}'),
           position: LatLng(mosque.lat, mosque.lng),
           infoWindow: InfoWindow(
             title: mosque.name,
@@ -403,11 +444,17 @@ class _HomepageState extends State<Homepage> {
           return Stack(
             children: [
               GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: selectedPos,
+                  initialCameraPosition: CameraPosition(
+                  target: selectedPos ?? const LatLng(25.3960, 68.3578),
                   zoom: 14,
                 ),
-                onMapCreated: (controller) => mapController = controller,
+               onMapCreated: (controller) async {
+    mapController = controller;
+    isMapReady = true;
+
+    // 🔥 NOW move to current location
+    await _moveToCurrentLocation();
+  },
                 markers: markers,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,

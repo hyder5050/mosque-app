@@ -293,7 +293,7 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                           ),
                           _Divider(),
                           _SettingsTile(
-                            icon: Icons.person_2_outlined,
+                            icon: Icons.people_alt_outlined,
                             title: 'Users',
                             subtitle: 'Here you can manage users',
                             iconColor: Colors.green.shade600,
@@ -328,23 +328,23 @@ class _AdminsettingState extends State<Adminsetting> with SingleTickerProviderSt
                     _SettingsCard(
                       child: Column(
                         children: [
-                          _SettingsTile(
-                            icon: Icons.notifications_outlined,
-                            title: 'Notifications',
-                            subtitle: 'Manage notification preferences',
-                            iconColor: Colors.red.shade600,
-                            width: width,
-                            trailing: Switch(
-                              value: notificationsEnabled,
-                              activeColor: Colors.green.shade600,
-                              onChanged: (value) {
-                                setState(() {
-                                  notificationsEnabled = value;
-                                });
-                              },
-                            ),
-                          ),
-                          _Divider(),
+                          // _SettingsTile(
+                          //   icon: Icons.notifications_outlined,
+                          //   title: 'Notifications',
+                          //   subtitle: 'Manage notification preferences',
+                          //   iconColor: Colors.red.shade600,
+                          //   width: width,
+                          //   trailing: Switch(
+                          //     value: notificationsEnabled,
+                          //     activeColor: Colors.green.shade600,
+                          //     onChanged: (value) {
+                          //       setState(() {
+                          //         notificationsEnabled = value;
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
+                          // _Divider(),
                           _SettingsTile(
                             icon: Icons.language_rounded,
                             title: 'Language',
@@ -486,7 +486,7 @@ class _SettingsTile extends StatelessWidget {
   final Color iconColor;
   final double width;
   final VoidCallback? onTap;
-  final Widget? trailing;
+  // final Widget? trailing;
 
   const _SettingsTile({
     required this.icon,
@@ -495,7 +495,7 @@ class _SettingsTile extends StatelessWidget {
     required this.iconColor,
     required this.width,
     this.onTap,
-    this.trailing,
+    // this.trailing,
   });
 
   @override
@@ -534,13 +534,13 @@ class _SettingsTile extends StatelessWidget {
           color: Colors.grey[600],
         ),
       ),
-      trailing: trailing ?? (onTap != null
-          ? Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey[400],
-              size: width * 0.06,
-            )
-          : null),
+      // trailing: trailing ?? (onTap != null
+      //     ? Icon(
+      //         Icons.chevron_right_rounded,
+      //         color: Colors.grey[400],
+      //         size: width * 0.06,
+      //       )
+      //     : null),
     );
   }
 }
